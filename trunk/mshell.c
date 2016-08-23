@@ -1,8 +1,9 @@
 #define _GNU_SOURCE
 #include <sys/types.h>
 #include <sys/wait.h>
+#include <sys/stat.h>
 #include <unistd.h>
-
+#include <fcntl.h>
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
@@ -177,6 +178,90 @@ err_exit:
 	free(line);
 }
 
+
+/*
+ * Input command to exevute I/O Redirection of a command output to a file
+ */
+void do_exec_io_redirection(void)
+{
+	char *line = NULL;
+	size_t len = 0;
+	ssize_t ret;
+	pid_t cpid;
+	int err;
+	char **split;
+	char *trimed;
+	char *filename = NULL;
+	char *trimed_filename = NULL;
+	int fd;
+		
+	printf("cmd: ");
+
+	ret = getline(&line, &len, stdin);
+	if (ret == -1) {
+		fprintf(stderr, "error reading input\n");
+		goto err_line;
+	}
+
+	
+	trimed = trim(line);
+
+	if (strlen(trimed) == 0)
+		goto err_line;
+
+	split = str_split(trimed, ' ');
+
+	printf("filename: ");
+	ret = getline(&filename, &len, stdin);
+	if (ret == -1) {
+		fprintf(stderr, "error reading input\n");
+		goto err_split;
+	}
+
+	trimed_filename = trim(filename);
+
+	if (strlen(trimed) == 0)
+		goto err_filename;
+
+	cpid = fork();
+	if (cpid == -1) {
+		fprintf(stderr, "error creating child: %s\n", strerror(errno));
+		goto err_filename;
+	}
+
+	if (cpid == 0) {
+		close(1);
+		fd = open(filename, O_RDWR | O_CREAT | O_TRUNC, S_IRUSR);
+
+		if(fd == -1) {
+			fprintf(stderr, "error opening file '%s' : %s", filename, strerror(errno));
+			goto err_filename;
+		}
+
+		execvp(split[0], split);
+		fprintf(stderr, "error executing cmd '%s': %s\n",
+			split[0], strerror(errno));
+		close(fd);
+		exit(0);
+	}
+
+	err = waitpid(cpid, NULL, 0);
+	if (err == -1) {
+		if (errno != ECHILD)
+			fprintf(stderr, "error waiting for child: %s\n",
+				strerror(errno));
+		goto err_filename;
+	}
+
+err_filename:
+	free(filename);
+err_split:
+	free(split);
+err_line:
+	free(line);
+}
+
+
 void show_help(char *menu[])
 {
 	int i;
@@ -230,6 +315,7 @@ int main(int argc, char *argv[])
 		"c: Change Directory",
 		"f: Execute Command",
 		"x: Exit",
+		"i: I/O redirection",
 		"h: Help",
 		NULL,
 	};
@@ -244,6 +330,9 @@ int main(int argc, char *argv[])
 			break;
 		case 'f':
 			do_exec_cmd();
+			break;
+		case 'i':
+			do_exec_io_redirection();
 			break;
 		case 'h':
 			show_help(main_menu);
