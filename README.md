@@ -19,14 +19,14 @@ Following are the features planned to add on top of this code.
  * Pipeline implimentation.
  * Setting environment and that can be used by a command.
 
-## Download and Compiling the code
+### Compiling the code
 
 ```
 $ cd glowing-c/trunk
 $ make mshell
 ```
 
-## Runing mshell
+### Runing mshell
 * Run the compiled mshell
 
 ```
@@ -46,7 +46,7 @@ PID TTY          TIME CMD
 /home/user/project/glowing-c/trunk$
 ```
 
-## Testing I/O redirection with mshell
+### Testing I/O redirection with mshell
 
 ```
 /home/user/project/glowing-c/trunk$ i
@@ -71,7 +71,7 @@ a one line logic.
 ```
 $ cd glowing-c/trunk
 $ make string-copy
-rengaraj@gnu:~/project/glowing-c/trunk$ ./string-copy
+$ ./string-copy
 Enter the string: welcome
 input buffer welcome
 
