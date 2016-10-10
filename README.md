@@ -3,6 +3,12 @@ glowing-c
 
 For writing some application using c
 
+## Downloading the repo
+
+```
+$ git clone https://github.com/gnurenga/glowing-c.git
+```
+
 ## My Shell or Mini Shell
 
 This is a shell implimentation written initially by Vijaykumar B.
@@ -16,9 +22,8 @@ Following are the features planned to add on top of this code.
 ## Download and Compiling the code
 
 ```
-$ git clone https://github.com/gnurenga/glowing-c.git
 $ cd glowing-c/trunk
-$ gcc mshell.c -o mshell
+$ make mshell
 ```
 
 ## Runing mshell
@@ -55,4 +60,20 @@ new.txt
 singley.c
 test.c
 
+```
+
+## String copy with out using strcpy
+
+Instead of using standard string function,
+copying string from one buffer to other in
+a one line logic.
+
+```
+$ cd glowing-c/trunk
+$ make string-copy
+rengaraj@gnu:~/project/glowing-c/trunk$ ./string-copy
+Enter the string: welcome
+input buffer welcome
+
+Destination Buffer welcome
 ```
